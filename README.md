@@ -46,7 +46,7 @@ pip install git+https://github.com/coqui-ai/TTS.git@dbf1a08a0d4e47fdad6172e433ee
 ```
 > You will get some numpy issue while installing TTS. Please ignore it, all the sub-packages needed will be installed except numpy.
 
-### Docker Installation (Optional)
+#### Docker Installation (Optional)
 
 ```bash
 # Build the image
