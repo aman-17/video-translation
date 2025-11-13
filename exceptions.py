@@ -10,6 +10,7 @@ class PipelineError(Exception):
     All custom exceptions in the pipeline inherit from this class,
     making it easy to catch any pipeline-specific error.
     """
+
     pass
 
 
@@ -20,6 +21,7 @@ class VideoFileNotFoundError(PipelineError):
     This exception is raised when input files (video, transcript, etc.)
     cannot be located at the specified path.
     """
+
     pass
 
 
@@ -30,6 +32,7 @@ class TranslationError(PipelineError):
     This exception is raised when the translation service fails to
     translate text from source to target language.
     """
+
     pass
 
 
@@ -41,6 +44,7 @@ class TTSError(PipelineError):
     audio from text, typically due to model loading issues or
     generation errors.
     """
+
     pass
 
 
@@ -52,4 +56,5 @@ class LatentSyncError(PipelineError):
     process the video, typically due to missing checkpoints,
     CUDA issues, or processing errors.
     """
+
     pass

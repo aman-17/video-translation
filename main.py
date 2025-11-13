@@ -20,11 +20,7 @@ from moviepy.editor import VideoFileClip
 from TTS.api import TTS
 
 from config import Config
-from exceptions import (
-    VideoFileNotFoundError,
-    TTSError,
-    LatentSyncError
-)
+from exceptions import LatentSyncError, TTSError, VideoFileNotFoundError
 from subtitles import SubtitleSegment, parse_srt_file, save_translated_srt
 from translation import translate_segments
 
@@ -37,19 +33,16 @@ def setup_logging(verbose: bool = False) -> logging.Logger:
 
     logging.basicConfig(
         level=log_level,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    logger = logging.getLogger('VideoTranslationPipeline')
+    logger = logging.getLogger("VideoTranslationPipeline")
     return logger
 
 
 def extract_reference_audio(
-    video_path: str,
-    output_path: str,
-    duration: float,
-    logger: logging.Logger
+    video_path: str, output_path: str, duration: float, logger: logging.Logger
 ) -> None:
     """
     Extract reference audio clip from video for voice cloning.
@@ -86,7 +79,7 @@ def generate_segment_audio(
     language: str,
     temperature: float,
     speed: float,
-    logger: logging.Logger
+    logger: logging.Logger,
 ) -> bool:
     """
     Generate audio for a text segment using TTS with voice cloning.
@@ -112,7 +105,7 @@ def generate_segment_audio(
             language=language,
             temperature=temperature,
             speed=speed,
-            enable_text_splitting=True
+            enable_text_splitting=True,
         )
         return True
     except Exception as e:
@@ -125,7 +118,7 @@ def create_synthesized_audio(
     reference_audio: str,
     output_dir: str,
     target_lang: str,
-    logger: logging.Logger
+    logger: logging.Logger,
 ) -> str:
     """
     Create complete synthesized audio track with voice cloning.
@@ -168,7 +161,7 @@ def create_synthesized_audio(
         language=target_lang,
         temperature=Config.TTS_TEMPERATURE,
         speed=Config.TTS_SPEED,
-        logger=logger
+        logger=logger,
     )
 
     if not success:
@@ -185,7 +178,7 @@ def run_latentsync(
     inference_steps: int,
     guidance_scale: float,
     seed: int,
-    logger: logging.Logger
+    logger: logging.Logger,
 ) -> bool:
     """
     Run LatentSync for lip-sync.
@@ -202,13 +195,13 @@ def run_latentsync(
     logger.info("Running LatentSync for lip-sync")
 
     # Add latentsync directory to Python path
-    latentsync_dir = os.path.join(os.path.dirname(__file__), 'latentsync')
+    latentsync_dir = os.path.join(os.path.dirname(__file__), "latentsync")
     if latentsync_dir not in sys.path:
         sys.path.insert(0, latentsync_dir)
 
     try:
-        from scripts.inference import main as latentsync_main
         from omegaconf import OmegaConf
+        from scripts.inference import main as latentsync_main
     except ImportError as e:
         raise LatentSyncError(f"Failed to import LatentSync modules: {e}")
 
@@ -216,9 +209,7 @@ def run_latentsync(
     config_path = Config.LATENTSYNC_CONFIG
 
     if not os.path.exists(checkpoint_path):
-        raise LatentSyncError(
-            f"LatentSync checkpoint not found at {checkpoint_path}"
-        )
+        raise LatentSyncError(f"LatentSync checkpoint not found at {checkpoint_path}")
 
     if not os.path.exists(config_path):
         raise LatentSyncError(f"LatentSync config not found at {config_path}")
@@ -226,10 +217,12 @@ def run_latentsync(
     try:
         config = OmegaConf.load(config_path)
         config["run"] = config.get("run", {})
-        config["run"].update({
-            "guidance_scale": guidance_scale,
-            "inference_steps": inference_steps,
-        })
+        config["run"].update(
+            {
+                "guidance_scale": guidance_scale,
+                "inference_steps": inference_steps,
+            }
+        )
     except Exception as e:
         raise LatentSyncError(f"Failed to load LatentSync config: {e}")
 
@@ -237,6 +230,7 @@ def run_latentsync(
         """
         Arguments for LatentSync.
         """
+
         pass
 
     args = Args()
@@ -257,7 +251,7 @@ def run_latentsync(
     logger.info(f"Seed: {seed}")
 
     original_dir = os.getcwd()
-    latentsync_dir = os.path.join(os.path.dirname(__file__), 'latentsync')
+    latentsync_dir = os.path.join(os.path.dirname(__file__), "latentsync")
 
     try:
         os.chdir(latentsync_dir)
@@ -287,7 +281,7 @@ class VideoTranslationPipeline:
         guidance_scale: float = Config.DEFAULT_GUIDANCE_SCALE,
         seed: int = Config.DEFAULT_SEED,
         keep_temp: bool = False,
-        verbose: bool = False
+        verbose: bool = False,
     ):
         """
         Initialize the video translation pipeline.
@@ -351,10 +345,10 @@ class VideoTranslationPipeline:
                 segments=segments,
                 target_lang=Config.TARGET_LANG,
                 source_lang=Config.SOURCE_LANG,
-                logger=self.logger
+                logger=self.logger,
             )
 
-            translated_srt_path = self.output_path.replace('.mp4', Config.OUTPUT_SUFFIX_SRT)
+            translated_srt_path = self.output_path.replace(".mp4", Config.OUTPUT_SUFFIX_SRT)
             save_translated_srt(translated_segments, translated_srt_path, self.logger)
 
             self.logger.info("\nExtracting reference audio for voice cloning")
@@ -363,7 +357,7 @@ class VideoTranslationPipeline:
                 video_path=self.video_path,
                 output_path=reference_audio,
                 duration=Config.REFERENCE_AUDIO_DURATION,
-                logger=self.logger
+                logger=self.logger,
             )
 
             self.logger.info("\nGenerating German audio with voice cloning")
@@ -372,10 +366,10 @@ class VideoTranslationPipeline:
                 reference_audio=reference_audio,
                 output_dir=self.temp_dir,
                 target_lang=Config.TARGET_LANG,
-                logger=self.logger
+                logger=self.logger,
             )
 
-            output_audio_path = self.output_path.replace('.mp4', Config.OUTPUT_SUFFIX_AUDIO)
+            output_audio_path = self.output_path.replace(".mp4", Config.OUTPUT_SUFFIX_AUDIO)
             shutil.copy(final_audio_path, output_audio_path)
             self.logger.info(f"Final audio saved to: {output_audio_path}")
 
@@ -387,7 +381,7 @@ class VideoTranslationPipeline:
                 inference_steps=self.inference_steps,
                 guidance_scale=self.guidance_scale,
                 seed=self.seed,
-                logger=self.logger
+                logger=self.logger,
             )
 
             self.logger.info("\nTranslation Complete.")
@@ -417,7 +411,6 @@ class VideoTranslationPipeline:
                 self.logger.warning(f"Failed to clean up temporary files: {e}")
 
 
-
 def create_argument_parser() -> argparse.ArgumentParser:
     """
     Create and configure the argument parser.
@@ -437,61 +430,45 @@ def create_argument_parser() -> argparse.ArgumentParser:
             # With custom LatentSync parameters
             python main.py --video input.mp4 --transcript input.srt --output outputs/translated.mp4 \\
             --inference-steps 30 --guidance-scale 2.5 --seed 42
-            """
+            """,
     )
+
+    parser.add_argument("--video", required=True, help="Path to input video file")
 
     parser.add_argument(
-        "--video",
-        required=True,
-        help="Path to input video file"
+        "--transcript", required=True, help="Path to input transcript file in SRT format"
     )
 
-    parser.add_argument(
-        "--transcript",
-        required=True,
-        help="Path to input transcript file in SRT format"
-    )
+    parser.add_argument("--output", required=True, help="Path for output video file")
 
-    parser.add_argument(
-        "--output",
-        required=True,
-        help="Path for output video file"
-    )
-
-    latentsync_group = parser.add_argument_group('LatentSync parameters')
+    latentsync_group = parser.add_argument_group("LatentSync parameters")
 
     latentsync_group.add_argument(
         "--inference-steps",
         type=int,
         default=Config.DEFAULT_INFERENCE_STEPS,
-        help=f"Number of diffusion inference steps (default: {Config.DEFAULT_INFERENCE_STEPS})."
+        help=f"Number of diffusion inference steps (default: {Config.DEFAULT_INFERENCE_STEPS}).",
     )
 
     latentsync_group.add_argument(
         "--guidance-scale",
         type=float,
         default=Config.DEFAULT_GUIDANCE_SCALE,
-        help=f"Guidance scale for diffusion model (default: {Config.DEFAULT_GUIDANCE_SCALE})."
+        help=f"Guidance scale for diffusion model (default: {Config.DEFAULT_GUIDANCE_SCALE}).",
     )
 
     latentsync_group.add_argument(
         "--seed",
         type=int,
         default=Config.DEFAULT_SEED,
-        help=f"Random seed for reproducibility (default: {Config.DEFAULT_SEED})"
+        help=f"Random seed for reproducibility (default: {Config.DEFAULT_SEED})",
     )
 
     parser.add_argument(
-        "--keep-temp",
-        action="store_true",
-        help="Keep temporary audio files after processing"
+        "--keep-temp", action="store_true", help="Keep temporary audio files after processing"
     )
 
-    parser.add_argument(
-        "--verbose",
-        action="store_true",
-        help="Enable verbose debug logging"
-    )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose debug logging")
 
     return parser
 
@@ -512,7 +489,7 @@ def main():
             guidance_scale=args.guidance_scale,
             seed=args.seed,
             keep_temp=args.keep_temp,
-            verbose=args.verbose
+            verbose=args.verbose,
         )
 
         pipeline.run()

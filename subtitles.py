@@ -26,6 +26,7 @@ class SubtitleSegment:
         end_time: End timestamp in seconds
         text: Subtitle text content
     """
+
     index: int
     start_time: float
     end_time: float
@@ -52,10 +53,12 @@ class SubtitleSegment:
         """
         String representation of the subtitle segment.
         """
-        return (f"SubtitleSegment(index={self.index}, "
-                f"start={self.start_time:.2f}s, "
-                f"end={self.end_time:.2f}s, "
-                f"text='{self.text[:30]}...')")
+        return (
+            f"SubtitleSegment(index={self.index}, "
+            f"start={self.start_time:.2f}s, "
+            f"end={self.end_time:.2f}s, "
+            f"text='{self.text[:30]}...')"
+        )
 
 
 def parse_srt_timestamp(timestamp: str) -> float:
@@ -73,7 +76,7 @@ def parse_srt_timestamp(timestamp: str) -> float:
         83.456
     """
     try:
-        time_parts = timestamp.replace(',', '.').split(':')
+        time_parts = timestamp.replace(",", ".").split(":")
         if len(time_parts) != 3:
             raise ValueError(f"Invalid timestamp format: {timestamp}")
 
@@ -103,14 +106,14 @@ def parse_srt_file(srt_path: str, logger: logging.Logger) -> List[SubtitleSegmen
     logger.info(f"Parsing SRT file: {srt_path}")
     segments = []
 
-    with open(srt_path, 'r', encoding='utf-8') as f:
+    with open(srt_path, "r", encoding="utf-8") as f:
         content = f.read()
 
     # Splitting by double newlines to get individual subtitle blocks
-    blocks = re.split(r'\n\s*\n', content.strip())
+    blocks = re.split(r"\n\s*\n", content.strip())
 
     for block in blocks:
-        lines = block.strip().split('\n')
+        lines = block.strip().split("\n")
         if len(lines) < 3:
             logger.debug(f"Skipping malformed block: {block[:50]}...")
             continue
@@ -119,7 +122,7 @@ def parse_srt_file(srt_path: str, logger: logging.Logger) -> List[SubtitleSegmen
             index = int(lines[0])
 
             # Parse timestamp line: "00:00:01,000 --> 00:00:03,500"
-            timestamp_pattern = r'(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})'
+            timestamp_pattern = r"(\d{2}:\d{2}:\d{2},\d{3})\s*-->\s*(\d{2}:\d{2}:\d{2},\d{3})"
             timestamp_match = re.match(timestamp_pattern, lines[1])
 
             if not timestamp_match:
@@ -128,7 +131,7 @@ def parse_srt_file(srt_path: str, logger: logging.Logger) -> List[SubtitleSegmen
 
             start_time = parse_srt_timestamp(timestamp_match.group(1))
             end_time = parse_srt_timestamp(timestamp_match.group(2))
-            text = ' '.join(lines[2:])  # joining remaining lines as text
+            text = " ".join(lines[2:])  # joining remaining lines as text
 
             segment = SubtitleSegment(index, start_time, end_time, text)
             segments.append(segment)
@@ -142,9 +145,7 @@ def parse_srt_file(srt_path: str, logger: logging.Logger) -> List[SubtitleSegmen
 
 
 def save_translated_srt(
-    segments: List[SubtitleSegment],
-    output_path: str,
-    logger: logging.Logger
+    segments: List[SubtitleSegment], output_path: str, logger: logging.Logger
 ) -> None:
     """
     Save translated subtitle segments to SRT file.
@@ -159,7 +160,7 @@ def save_translated_srt(
     output_dir = Path(output_path).parent
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    with open(output_path, 'w', encoding='utf-8') as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         for segment in segments:
             start_h = int(segment.start_time // 3600)
             start_m = int((segment.start_time % 3600) // 60)

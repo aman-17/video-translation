@@ -1,5 +1,5 @@
 """
-Translation module that handles all translation operations, converting 
+Translation module that handles all translation operations, converting
 subtitle segments from one language to another.
 """
 
@@ -13,10 +13,7 @@ from subtitles import SubtitleSegment
 
 
 def translate_segments(
-    segments: List[SubtitleSegment],
-    target_lang: str,
-    source_lang: str,
-    logger: logging.Logger
+    segments: List[SubtitleSegment], target_lang: str, source_lang: str, logger: logging.Logger
 ) -> List[SubtitleSegment]:
     """
     Translate subtitle segments from source to target language.
@@ -50,15 +47,16 @@ def translate_segments(
                 index=segment.index,
                 start_time=segment.start_time,
                 end_time=segment.end_time,
-                text=translated_text
+                text=translated_text,
             )
             translated_segments.append(translated_segment)
 
             logger.debug(f"[{segment.index}] '{segment.text}' -> '{translated_text}'")
 
         except Exception as e:
-            logger.warning(f"Translation failed for segment {segment.index}: {e}. "
-                          f"Using original text.")
+            logger.warning(
+                f"Translation failed for segment {segment.index}: {e}. " f"Using original text."
+            )
             translated_segments.append(segment)
             failed_count += 1
 
