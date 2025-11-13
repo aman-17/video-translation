@@ -40,11 +40,14 @@ brew install ffmpeg
 ```
 
 ```bash
+# creates environment and downloads the dependencies
 source setup_env.sh
+```
 
+```bash
 pip install git+https://github.com/coqui-ai/TTS.git@dbf1a08a0d4e47fdad6172e433eeb34bc6b13b4e
 ```
-> You will get some numpy issue while installing TTS. Please ignore it, all the sub-packages needed will be installed except numpy.
+> You might encounter a NumPy-related issue while installing TTS. Please ignore it as all the required sub-packages will be installed except NumPy.
 
 #### Docker Installation (Optional)
 
