@@ -48,14 +48,14 @@ checkpoints/
 !latentsync/checkpoints/.gitkeep
 
 # Output files
-outputs/
+# outputs/
 temp/
 temp_audio_segments/
-*.mp4
-*.wav
+# *.mp4
+# *.wav
 *.avi
 *.mov
-*.srt
+# *.srt
 !examples/*.mp4
 !examples/*.srt
 
