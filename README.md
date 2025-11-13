@@ -97,7 +97,7 @@ python main.py \
 
 ### Expected Output Files
 
-After successful execution, you'll find:
+After successful execution, you'll find in [outputs](https://github.com/aman-17/video-translation/tree/master/outputs) directory:
 - `outputs/translated_video.mp4` - The final translated video with lip-sync
 - `outputs/translated_video_audio.wav` - The generated German audio track
 - `outputs/translated_video_translated.srt` - Translated German subtitles
