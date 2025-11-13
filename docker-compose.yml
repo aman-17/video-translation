@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  video-translation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: video-translation:latest
+    container_name: video_translation
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+    volumes:
+      - ./inputs:/app/inputs:ro      
+      - ./outputs:/app/outputs
+
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - PYTHONUNBUFFERED=1
+
+    command: >          # Example: Uncomment and modify as needed
+      python3 main.py
+        --video /app/inputs/input_video.mp4
+        --transcript /app/inputs/input_subtitles.srt
+        --output /app/outputs/translated_video.mp4
+        --inference-steps 25
+        --guidance-scale 2.0
+
+    stdin_open: true
+    tty: true

@@ -53,6 +53,20 @@ huggingface-cli download ByteDance/LatentSync-1.6 whisper/tiny.pt --local-dir la
 huggingface-cli download ByteDance/LatentSync-1.6 latentsync_unet.pt --local-dir latentsync/checkpoints
 ```
 
+### Docker Installation
+
+```bash
+# Build the image
+docker-compose build
+
+# Run with your video
+docker-compose run --rm video-translation \
+  python3 main.py \
+    --video /app/inputs/input_video.mp4 \
+    --transcript /app/inputs/input_subtitles.srt \
+    --output /app/outputs/translated_video.mp4
+```
+
 ## Usage
 
 ### Basic Usage
@@ -101,3 +115,8 @@ After successful execution, you'll find in [outputs](https://github.com/aman-17/
 - `outputs/translated_video.mp4` - The final translated video with lip-sync
 - `outputs/translated_video_audio.wav` - The generated German audio track
 - `outputs/translated_video_translated.srt` - Translated German subtitles
+
+## Limitations
+
+1. Voice cloning is not 100% accurate. I did not find any open-source voice cloning models that are great for this task.
+
